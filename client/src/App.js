@@ -1,10 +1,70 @@
-import React from "react";
+import React, { useState } from "react";
+
 import HeadingTitle from "./components/HeadingTitle";
 import { FiGithub, FiTwitter } from "react-icons/fi";
+
+import axios from "axios";
 
 import "./App.css";
 
 const App = () => {
+  const [pairTip, setPairTip] = useState("");
+  const [depth, setDepth] = useState({
+    pairDepth: "",
+    typeDepth: "",
+    amountDepth: "",
+  });
+
+  const handleChangeTip = (e) => {
+    setPairTip(e.target.value);
+  };
+
+  const handleChangeDepth = (e) => {
+    setDepth({ ...depth, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmitTip = async (e) => {
+    e.preventDefault();
+
+    try {
+      const url = "/api/tip";
+      const data = { data: pairTip };
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const res = await axios.post(url, data, config);
+
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleSubmitDepth = async (e) => {
+    e.preventDefault();
+
+    try {
+      const url = "api/depth";
+      const data = depth;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const res = await axios.post(url, data, config);
+
+      console.log("Logging depth res:");
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="homeWrapper">
       <div className="homeLayout">
@@ -40,29 +100,43 @@ const App = () => {
           </div>
 
           <div className="endPointWrapper">
-            <form action="" className="formWrapper">
-              <input type="text" placeholder="Insert trading pair" />
+            <form className="formWrapper" onSubmit={handleSubmitTip}>
+              <input
+                type="text"
+                name="pairTip"
+                value={pairTip}
+                placeholder="Insert trading pair"
+                onChange={handleChangeTip}
+              />
               <button type="submit">Get price & amount</button>
             </form>
 
-            <form action="" className="formWrapper">
+            <form className="formWrapper" onSubmit={handleSubmitDepth}>
               <input
                 type="text"
-                name=""
-                id=""
+                name="pairDepth"
+                value={depth.pairDepth}
                 placeholder="Insert trading pair"
+                onChange={handleChangeDepth}
               />
 
-              <select name="" id="" placeholder="Operation type">
+              <select
+                name="typeDepth"
+                value={depth.typeDepth}
+                placeholder="Operation type"
+                onChange={handleChangeDepth}
+              >
+                <option value="0">Select operation type</option>
                 <option value="Buy">Buy</option>
                 <option value="Sell">Sell</option>
               </select>
 
               <input
                 type="text"
-                name=""
-                id=""
+                name="amountDepth"
+                value={depth.amountDepth}
                 placeholder="Amount to be traded"
+                onChange={handleChangeDepth}
               />
 
               <button type="submit">Get effective price</button>

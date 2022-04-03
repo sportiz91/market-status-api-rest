@@ -4,11 +4,16 @@
   "description": "Server that retrieves crypto market information from Bitfinex",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server",
+    "server": "nodemon server",
+    "client":  "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Santiago Pablo Ortiz",
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^7.1.0",
     "eslint": "^8.2.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-node": "^4.1.0",
@@ -21,5 +26,8 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.2"
+  },
+  "dependencies": {
+    "express": "^4.17.3"
   }
 }
