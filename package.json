@@ -28,6 +28,7 @@
     "prettier": "^2.6.2"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "express": "^4.17.3",
     "ws": "^8.5.0"
   }
