@@ -14,6 +14,7 @@ const App = () => {
   });
   const [depth, setDepth] = useState({
     pairDepth: "",
+    realDepth: "",
     typeDepth: "",
     amountDepth: "",
   });
@@ -74,7 +75,6 @@ const App = () => {
 
       const res = await axios.post(url, data, config);
 
-      console.log("Logging depth res:");
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -140,7 +140,7 @@ const App = () => {
               Best bid: price {best.bidPrice} & amount: {best.bidAmount}
             </p>
             <p>
-              Best amount: price {best.askPrice} & amount: {best.askAmount}
+              Best ask: price {best.askPrice} & amount: {best.askAmount}
             </p>
 
             <form className="formWrapper" onSubmit={handleSubmitDepth}>
@@ -149,6 +149,14 @@ const App = () => {
                 name="pairDepth"
                 value={depth.pairDepth}
                 placeholder="Insert trading pair"
+                onChange={handleChangeDepth}
+              />
+
+              <input
+                type="text"
+                name="amountDepth"
+                value={depth.amountDepth}
+                placeholder="Amount to be traded"
                 onChange={handleChangeDepth}
               />
 
@@ -163,13 +171,15 @@ const App = () => {
                 <option value="Sell">Sell</option>
               </select>
 
-              <input
-                type="text"
-                name="amountDepth"
-                value={depth.amountDepth}
-                placeholder="Amount to be traded"
+              <select
+                name="realDepth"
+                value={pair.realDepth}
                 onChange={handleChangeDepth}
-              />
+              >
+                <option value="0">Real vs one time request</option>
+                <option value="Real">Real</option>
+                <option value="One">One time request</option>
+              </select>
 
               <button type="submit">Get effective price</button>
             </form>
