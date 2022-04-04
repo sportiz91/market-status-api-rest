@@ -64,18 +64,20 @@ router.post("/", async (req, res) => {
 
       webSocket.on("message", (msg) => {
         console.log(`Server says: ${msg}`);
+        const decoMsg = JSON.parse(msg);
 
-        const [foundBid, foundAsk] = tipWsClient(msg);
+        console.log("decoMsg:");
+        console.log(decoMsg);
 
         // Building response object:
         const responseBid = {
-          price: foundBid[1].price,
-          amount: foundBid[1].amount,
+          price: decoMsg.snapshot[0][0],
+          amount: decoMsg.snapshot[0][2],
         };
 
         const responseAsk = {
-          price: foundAsk[1].price,
-          amount: foundAsk[1].amount,
+          price: decoMsg.snapshot[1][0],
+          amount: Math.abs(decoMsg.snapshot[1][2]),
         };
 
         const responseAgg = {

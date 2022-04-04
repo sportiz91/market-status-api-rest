@@ -1,3 +1,4 @@
+// Reducer helper is used to standarize the format of the book:
 const reducer = (bidOrAskObject) => {
   const reducedObject = bidOrAskObject.reduce((acc, item) => {
     const priceSplit = item[0].split(",");

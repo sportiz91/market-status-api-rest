@@ -1,12 +1,6 @@
-const sorting = (array, bidOrAsk) => {
-  // const mappedAsks = recreatedBook.psnap.asks
-  //   .map((price) => parseFloat(price.split(",")[0]))
-  //   .sort((a, b) => a - b);
-  // console.log("mappedAsks:");
-  // console.log(mappedAsks);
-  // const mappedBids = recreatedBook.psnap.bids
-  //   .map((price) => parseFloat(price.split(",")[0]))
-  //   .sort((a, b) => b - a);
+// mapSorting helper is used to return an array of the prices (only):
+const mapSorting = (array, bidOrAsk, type) => {
+  // let sortedArray;
 
   const mappedArray = array.map((item) => parseFloat(item[0]));
 
@@ -20,7 +14,17 @@ const sorting = (array, bidOrAsk) => {
     }
   });
 
+  // if (type === "reduce") {
+  //   sortedArray = sortedArray.reduce((acc, itemReduce) => {
+  //     const foundAmount = array.find(
+  //       (item) => item[0] === itemReduce.toString()
+  //     ).amount;
+
+  //     acc.push()
+  //   }, []);
+  // }
+
   return sortedArray;
 };
 
-module.exports = sorting;
+module.exports = mapSorting;

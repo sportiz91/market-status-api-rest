@@ -6,7 +6,7 @@ const WebSocket = require("ws");
 const axios = require("axios");
 
 // Requiring ws client logic for the particular endpoint:
-const tipWsClient = require("../ws/wsClient/tipWsClient");
+const depthWsClient = require("../ws/wsClient/depthWsClient");
 
 // Instantiating server router:
 const router = express.Router();
@@ -19,15 +19,6 @@ router.post("/", (req, res) => {
   const amountToBeTraded = req.body.amountDepth;
   const operationType = req.body.typeDepth;
   const flag = req.body.realDepth;
-
-  // console.log("pair:");
-  // console.log(pair);
-  // console.log("amountToBeTraded:");
-  // console.log(amountToBeTraded);
-  // console.log("operationType:");
-  // console.log(operationType);
-  // console.log("flag:");
-  // console.log(flag);
 
   if (flag === "One") {
     res.json("One");
@@ -52,26 +43,36 @@ router.post("/", (req, res) => {
       webSocket.on("message", (msg) => {
         console.log(`Server says: ${msg}`);
 
-        const [foundBid, foundAsk] = tipWsClient(msg);
+        const decodedMsg = JSON.parse(msg);
+
+        const theBook = decodedMsg.book;
+        const theBookType = decodedMsg.bookType;
+        const theAmount = decodedMsg.tradeAmount;
+
+        const [foundBid, foundAsk] = depthWsClient(
+          theBook,
+          theBookType,
+          theAmount
+        );
 
         // Building response object:
-        const responseBid = {
-          price: foundBid[1].price,
-          amount: foundBid[1].amount,
-        };
+        // const responseBid = {
+        //   price: foundBid[1].price,
+        //   amount: foundBid[1].amount,
+        // };
 
-        const responseAsk = {
-          price: foundAsk[1].price,
-          amount: foundAsk[1].amount,
-        };
+        // const responseAsk = {
+        //   price: foundAsk[1].price,
+        //   amount: foundAsk[1].amount,
+        // };
 
-        const responseAgg = {
-          bestBid: responseBid,
-          bestAsk: responseAsk,
-        };
+        // const responseAgg = {
+        //   bestBid: responseBid,
+        //   bestAsk: responseAsk,
+        // };
 
         // Answering frontend:
-        res.json(responseAgg);
+        res.json("momentáneo");
       });
     };
   }
