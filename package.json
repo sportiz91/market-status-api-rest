@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server",
     "server": "nodemon server",
-    "client":  "npm start --prefix client",
+    "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Santiago Pablo Ortiz",
@@ -28,6 +28,7 @@
     "prettier": "^2.6.2"
   },
   "dependencies": {
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "ws": "^8.5.0"
   }
 }

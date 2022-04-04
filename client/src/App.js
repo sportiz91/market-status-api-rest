@@ -8,15 +8,24 @@ import axios from "axios";
 import "./App.css";
 
 const App = () => {
-  const [pairTip, setPairTip] = useState("");
+  const [pair, setPair] = useState({
+    pairTip: "",
+    realTip: "",
+  });
   const [depth, setDepth] = useState({
     pairDepth: "",
     typeDepth: "",
     amountDepth: "",
   });
+  const [best, setBest] = useState({
+    bidPrice: "",
+    bidAmount: "",
+    askPrice: "",
+    askAmount: "",
+  });
 
   const handleChangeTip = (e) => {
-    setPairTip(e.target.value);
+    setPair({ ...pair, [e.target.name]: e.target.value });
   };
 
   const handleChangeDepth = (e) => {
@@ -27,8 +36,8 @@ const App = () => {
     e.preventDefault();
 
     try {
-      const url = "/api/tip";
-      const data = { data: pairTip };
+      const url = "api/tip";
+      const data = pair;
 
       const config = {
         headers: {
@@ -39,6 +48,13 @@ const App = () => {
       const res = await axios.post(url, data, config);
 
       console.log(res);
+
+      setBest({
+        bidPrice: res.data.bestBid.price,
+        bidAmount: res.data.bestBid.amount,
+        askPrice: res.data.bestAsk.price,
+        askAmount: res.data.bestAsk.amount,
+      });
     } catch (err) {
       console.log(err);
     }
@@ -104,12 +120,28 @@ const App = () => {
               <input
                 type="text"
                 name="pairTip"
-                value={pairTip}
+                value={pair.pairTip}
                 placeholder="Insert trading pair"
                 onChange={handleChangeTip}
               />
+              <select
+                name="realTip"
+                value={pair.realTip}
+                onChange={handleChangeTip}
+              >
+                <option value="0">Real vs one time request</option>
+                <option value="Real">Real</option>
+                <option value="One">One time request</option>
+              </select>
               <button type="submit">Get price & amount</button>
             </form>
+
+            <p>
+              Best bid: price {best.bidPrice} & amount: {best.bidAmount}
+            </p>
+            <p>
+              Best amount: price {best.askPrice} & amount: {best.askAmount}
+            </p>
 
             <form className="formWrapper" onSubmit={handleSubmitDepth}>
               <input
