@@ -55,8 +55,6 @@ router.post("/", async (req, res) => {
 
       const data = {
         crypto: pair,
-        tradeAmount: amountToBeTraded,
-        buyOrSell: operationType,
         api: "depth",
       };
 

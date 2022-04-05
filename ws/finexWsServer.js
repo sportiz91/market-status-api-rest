@@ -1,7 +1,7 @@
 // Requiring ws:
 const Ws = require("ws");
 
-const tipWsServer = (crypto, client) => {
+const finexWsServer = (crypto, client, leng) => {
   // Establishing Web Socket Connection:
   const wsUrl = "wss://api-pub.bitfinex.com/ws/2";
   const wss = new Ws(wsUrl);
@@ -23,7 +23,7 @@ const tipWsServer = (crypto, client) => {
         channel: "book",
         pair: crypto,
         prec: "P0",
-        len: 1,
+        len: leng,
       })
     );
   });
@@ -53,4 +53,4 @@ const tipWsServer = (crypto, client) => {
   });
 };
 
-module.exports = tipWsServer;
+module.exports = finexWsServer;

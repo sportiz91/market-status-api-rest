@@ -4,8 +4,7 @@ const http = require("http");
 const Ws = require("ws");
 
 // Requiring ws logic:
-const tipWsServer = require("./ws/wsServer/tipWsServer");
-const depthWsServer = require("./ws/wsServer/depthWsServer");
+const finexWsServer = require("./ws/finexWsServer");
 
 // Router imports:
 const tipRouter = require("./api/tip");
@@ -27,25 +26,15 @@ webSocketServer.on("connection", (webSocketClient) => {
 
     const pair = decodedMsg.crypto;
     const endpoint = decodedMsg.api;
-    let amount;
-    let type;
-
-    if (decodedMsg.tradeAmount) {
-      amount = decodedMsg.tradeAmount;
-    }
-
-    if (decodedMsg.buyOrSell) {
-      type = decodedMsg.buyOrSell;
-    }
 
     // ws server logic for the tip endpoint:
     if (endpoint === "tip") {
-      tipWsServer(pair, webSocketClient);
+      finexWsServer(pair, webSocketClient, 1);
     }
 
     // ws server logic for the depth endpoint:
     if (endpoint === "depth") {
-      depthWsServer(pair, webSocketClient, amount, type);
+      finexWsServer(pair, webSocketClient, 250);
     }
   });
 });
