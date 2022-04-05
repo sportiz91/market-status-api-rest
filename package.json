@@ -4,13 +4,13 @@
   "description": "Server that retrieves crypto market information from Bitfinex",
   "main": "server.js",
   "scripts": {
+    "build": "cd client && npm run build",
+    "install": "cd client && npm install",
     "test": "jest",
     "start": "node server",
     "server": "nodemon server",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "heroku-postbuid": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
-
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Santiago Pablo Ortiz",
   "license": "ISC",
