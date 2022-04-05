@@ -52,14 +52,6 @@ router.post("/", async (req, res) => {
     webSocket.onopen = () => {
       console.log("Web Socket Code on tip.js");
 
-      const data = {
-        crypto: pair,
-        api: "tip",
-      };
-
-      // webSocket.send("Hello from Client!");
-      webSocket.send(JSON.stringify(data));
-
       webSocket.on("message", (msg) => {
         console.log(`Server says: ${msg}`);
         const decoMsg = JSON.parse(msg);
@@ -85,7 +77,21 @@ router.post("/", async (req, res) => {
 
         // Answering frontend:
         res.json(responseAgg);
+
+        webSocket.close();
       });
+
+      const data = {
+        crypto: pair,
+        api: "tip",
+      };
+
+      // webSocket.send("Hello from Client!");
+      webSocket.send(JSON.stringify(data));
+    };
+
+    webSocket.onclose = () => {
+      console.log("Web Socket Client Closing!");
     };
   }
 });

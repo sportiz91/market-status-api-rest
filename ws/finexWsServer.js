@@ -4,20 +4,20 @@ const Ws = require("ws");
 const finexWsServer = (crypto, client, leng) => {
   // Establishing Web Socket Connection:
   const wsUrl = "wss://api-pub.bitfinex.com/ws/2";
-  const wss = new Ws(wsUrl);
+  const wsFinex = new Ws(wsUrl);
 
   // Instantiating order book:
   const book = {};
 
   // On open ws connection:
-  wss.on("open", () => {
+  wsFinex.on("open", () => {
     console.log("ws open");
 
     // Generating initial values for the book:
     book.messageCount = 0;
 
     // Subscribing to the pair channel defined by the user:
-    wss.send(
+    wsFinex.send(
       JSON.stringify({
         event: "subscribe",
         channel: "book",
@@ -29,12 +29,12 @@ const finexWsServer = (crypto, client, leng) => {
   });
 
   // On close ws connection:
-  wss.on("close", () => {
+  wsFinex.on("close", () => {
     console.log("ws close!");
   });
 
   // On message received by the ws server:
-  wss.on("message", (msgg) => {
+  wsFinex.on("message", (msgg) => {
     // Parse the data into readable js object:
     const data = JSON.parse(msgg);
 
@@ -49,6 +49,8 @@ const finexWsServer = (crypto, client, leng) => {
       book.messageCount += 1;
 
       client.send(JSON.stringify(book));
+
+      wsFinex.close();
     }
   });
 };

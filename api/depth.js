@@ -2,12 +2,13 @@
 const express = require("express");
 const WebSocket = require("ws");
 
-// Requiring external packages:
-const axios = require("axios");
-
 // Requiring helpers:
 const categorizer = require("../helpers/categorizer");
 const averager = require("../helpers/averager");
+const fetchPriceDepth = require("../helpers/fetchPriceDepth");
+
+// Requiring client ws logic:
+const depthWsClientLogic = require("../ws/depthWsClientLogic");
 
 // Instantiating server router:
 const router = express.Router();
@@ -25,39 +26,7 @@ router.post("/", async (req, res) => {
   if (flag === "One" && limit) return;
 
   if (flag === "One") {
-    const baseUrl = "https://api-pub.bitfinex.com/v2";
-    const pathParams = "calc/trade/avg";
-    const queryParams = `symbol=${pair}&amount=${
-      operationType === "Buy" ? amountToBeTraded : -1 * amountToBeTraded
-    }`;
-
-    // if (limit) {
-    //   console.log("LIMITE PADRE");
-
-    //   baseUrl = "https://api-pub.bitfinex.com/v2";
-    //   pathParams = "calc/trade/avg";
-    //   queryParams = `symbol=${pair}&rate_limit=${limit}`;
-    // }
-
-    const aggUrl = `${baseUrl}/${pathParams}?${queryParams}`;
-
-    console.log("aggUrl:");
-    console.log(aggUrl);
-
-    const options = {
-      url: aggUrl,
-      method: "POST",
-      headers: {},
-      data: {},
-    };
-
-    const result = await axios(options);
-
-    const price = result.data;
-
-    console.log("price:");
-    console.log(price);
-
+    const price = await fetchPriceDepth(pair, amountToBeTraded, operationType);
     res.json(price[0]);
   }
 
@@ -67,14 +36,6 @@ router.post("/", async (req, res) => {
     webSocket.onopen = () => {
       console.log("Web Socket Code on tip.js");
 
-      const data = {
-        crypto: pair,
-        api: "depth",
-      };
-
-      // webSocket.send("Hello from Client!");
-      webSocket.send(JSON.stringify(data));
-
       webSocket.on("message", (msg) => {
         console.log(`Server says: ${msg}`);
 
@@ -83,16 +44,6 @@ router.post("/", async (req, res) => {
 
         console.log("book:");
         console.log(book);
-
-        // Sanatize book:
-        console.log("249:");
-        console.log(decoMsg.snapshot[249]);
-        console.log("250:");
-        console.log(decoMsg.snapshot[250]);
-        console.log("251:");
-        console.log(decoMsg.snapshot[251]);
-        console.log("499:");
-        console.log(decoMsg.snapshot[499]);
 
         const sanatizedBook = categorizer(book, operationType);
 
@@ -121,11 +72,23 @@ router.post("/", async (req, res) => {
         // console.log("averagePrice:");
         // console.log(averagePrice);
 
-        // Building response object:
-
         // Answering frontend:
         res.json(averagePrice);
+
+        webSocket.close();
       });
+
+      const data = {
+        crypto: pair,
+        api: "depth",
+      };
+
+      // webSocket.send("Hello from Client!");
+      webSocket.send(JSON.stringify(data));
+    };
+
+    webSocket.onclose = () => {
+      console.log("Web Socket Client Closing!");
     };
   }
 });
