@@ -24,6 +24,7 @@ const App = () => {
     askPrice: "",
     askAmount: "",
   });
+  const [avg, setAvg] = useState("");
 
   const handleChangeTip = (e) => {
     setPair({ ...pair, [e.target.name]: e.target.value });
@@ -76,6 +77,8 @@ const App = () => {
       const res = await axios.post(url, data, config);
 
       console.log(res);
+
+      setAvg(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -183,6 +186,8 @@ const App = () => {
 
               <button type="submit">Get effective price</button>
             </form>
+
+            <p>Average Execution price: {avg}</p>
           </div>
         </div>
       </div>

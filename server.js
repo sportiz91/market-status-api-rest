@@ -38,8 +38,8 @@ webSocketServer.on("connection", (webSocketClient) => {
       type = decodedMsg.buyOrSell;
     }
 
+    // ws server logic for the tip endpoint:
     if (endpoint === "tip") {
-      // ws server logic for the tip endpoint:
       tipWsServer(pair, webSocketClient);
     }
 

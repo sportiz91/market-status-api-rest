@@ -5,9 +5,7 @@ const WebSocket = require("ws");
 // Requiring external packages:
 const axios = require("axios");
 
-// Requiring ws client logic for the particular endpoint:
-const tipWsClient = require("../ws/wsClient/tipWsClient");
-
+// Instantiating server router:
 const router = express.Router();
 
 // @route    POST api/tip

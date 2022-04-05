@@ -5,8 +5,9 @@ const WebSocket = require("ws");
 // Requiring external packages:
 const axios = require("axios");
 
-// Requiring ws client logic for the particular endpoint:
-const depthWsClient = require("../ws/wsClient/depthWsClient");
+// Requiring helpers:
+const categorizer = require("../helpers/categorizer");
+const averager = require("../helpers/averager");
 
 // Instantiating server router:
 const router = express.Router();
@@ -14,14 +15,36 @@ const router = express.Router();
 // @route    POST api/depth
 // @desc     Fetch real price of execution from Bitfinex API for the selected tPAIR.
 // @access   Public
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const pair = req.body.pairDepth;
   const amountToBeTraded = req.body.amountDepth;
   const operationType = req.body.typeDepth;
   const flag = req.body.realDepth;
 
   if (flag === "One") {
-    res.json("One");
+    const baseUrl = "https://api-pub.bitfinex.com/v2";
+    const pathParams = "calc/trade/avg";
+    const queryParams = `symbol=${pair}&amount=${
+      operationType === "Buy" ? amountToBeTraded : -1 * amountToBeTraded
+    }`;
+
+    const aggUrl = `${baseUrl}/${pathParams}?${queryParams}`;
+
+    const options = {
+      url: aggUrl,
+      method: "POST",
+      headers: {},
+      data: {},
+    };
+
+    const result = await axios(options);
+
+    const price = result.data;
+
+    console.log("price:");
+    console.log(price);
+
+    res.json(price[0]);
   }
 
   if (flag === "Real") {
@@ -43,36 +66,40 @@ router.post("/", (req, res) => {
       webSocket.on("message", (msg) => {
         console.log(`Server says: ${msg}`);
 
-        const decodedMsg = JSON.parse(msg);
+        const decoMsg = JSON.parse(msg);
+        const book = decoMsg.snapshot;
 
-        const theBook = decodedMsg.book;
-        const theBookType = decodedMsg.bookType;
-        const theAmount = decodedMsg.tradeAmount;
+        console.log("book:");
+        console.log(book);
 
-        const [foundBid, foundAsk] = depthWsClient(
-          theBook,
-          theBookType,
-          theAmount
+        // Sanatize book:
+        console.log("249:");
+        console.log(decoMsg.snapshot[249]);
+        console.log("250:");
+        console.log(decoMsg.snapshot[250]);
+        console.log("251:");
+        console.log(decoMsg.snapshot[251]);
+        console.log("499:");
+        console.log(decoMsg.snapshot[499]);
+
+        const sanatizedBook = categorizer(book, operationType);
+
+        console.log("sanatizedBook:");
+        console.log(sanatizedBook);
+
+        const averagePrice = averager(
+          sanatizedBook,
+          operationType,
+          amountToBeTraded
         );
 
+        console.log("averagePrice:");
+        console.log(averagePrice);
+
         // Building response object:
-        // const responseBid = {
-        //   price: foundBid[1].price,
-        //   amount: foundBid[1].amount,
-        // };
-
-        // const responseAsk = {
-        //   price: foundAsk[1].price,
-        //   amount: foundAsk[1].amount,
-        // };
-
-        // const responseAgg = {
-        //   bestBid: responseBid,
-        //   bestAsk: responseAsk,
-        // };
 
         // Answering frontend:
-        res.json("momentáneo");
+        res.json(averagePrice);
       });
     };
   }

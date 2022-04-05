@@ -15,8 +15,6 @@ const tipWsServer = (crypto, client) => {
 
     // Generating initial values for the book:
     book.messageCount = 0;
-    // book.bids = {};
-    // book.asks = {};
 
     // Subscribing to the pair channel defined by the user:
     wss.send(
@@ -50,40 +48,8 @@ const tipWsServer = (crypto, client) => {
 
       book.messageCount += 1;
 
-      console.log("book:");
-      console.log(book);
-
       client.send(JSON.stringify(book));
     }
-    // } else {
-    //   const priceToAdd = {
-    //     price: data[1][0],
-    //     count: data[1][1],
-    //     amount: data[1][2],
-    //   };
-
-    //   if (!priceToAdd.count) {
-    //     if (priceToAdd.amount > 0) {
-    //       if (book.bids[priceToAdd.price]) {
-    //         delete book.bids[priceToAdd.price];
-    //       }
-    //     } else if (priceToAdd.amount < 0) {
-    //       if (book.asks[priceToAdd.price]) {
-    //         delete book.asks[priceToAdd.price];
-    //       }
-    //     }
-    //   } else {
-    //     const side = priceToAdd.amount >= 0 ? "bids" : "asks";
-    //     priceToAdd.amount = Math.abs(priceToAdd.amount);
-    //     book[side][priceToAdd.price] = priceToAdd;
-    //   }
-
-    //   book.messageCount += 1;
-    // }
-
-    // if (book.messageCount === 60) {
-    //   client.send(JSON.stringify(book));
-    // }
   });
 };
 
