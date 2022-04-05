@@ -18,6 +18,7 @@ const App = () => {
     typeDepth: "",
     amountDepth: "",
     limitDepth: "",
+    amountLimitSelectDepth: "",
   });
   const [best, setBest] = useState({
     bidPrice: "",
@@ -32,7 +33,19 @@ const App = () => {
   };
 
   const handleChangeDepth = (e) => {
-    setDepth({ ...depth, [e.target.name]: e.target.value });
+    if (
+      e.target.name === "amountLimitSelectDepth" &&
+      e.target.value === "Amount"
+    ) {
+      setDepth({ ...depth, limitDepth: "", [e.target.name]: e.target.value });
+    } else if (
+      e.target.name === "amountLimitSelectDepth" &&
+      e.target.value === "Effective"
+    ) {
+      setDepth({ ...depth, amountDepth: "", [e.target.name]: e.target.value });
+    } else {
+      setDepth({ ...depth, [e.target.name]: e.target.value });
+    }
   };
 
   const handleSubmitTip = async (e) => {
@@ -133,7 +146,9 @@ const App = () => {
                 value={pair.realTip}
                 onChange={handleChangeTip}
               >
-                <option value="0">Real vs one time request</option>
+                <option value="" disabled selected>
+                  Real vs one time request
+                </option>
                 <option value="Real">Real</option>
                 <option value="One">One time request</option>
               </select>
@@ -156,21 +171,37 @@ const App = () => {
                 onChange={handleChangeDepth}
               />
 
-              <input
-                type="text"
-                name="amountDepth"
-                value={depth.amountDepth}
-                placeholder="Amount to be traded"
+              <select
+                name="amountLimitSelectDepth"
+                value={depth.amountLimitSelectDepth}
                 onChange={handleChangeDepth}
-              />
+              >
+                <option value="" disabled selected>
+                  Amount traded vs Effective price
+                </option>
+                <option value="Amount">Amount Traded</option>
+                <option value="Effective">Effective price</option>
+              </select>
 
-              <input
-                type="text"
-                name="limitDepth"
-                value={depth.limitDepth}
-                placeholder="Limit price for the execution"
-                onChange={handleChangeDepth}
-              />
+              {depth.amountLimitSelectDepth === "" ? (
+                ""
+              ) : depth.amountLimitSelectDepth === "Amount" ? (
+                <input
+                  type="text"
+                  name="amountDepth"
+                  value={depth.amountDepth}
+                  placeholder="Amount to be traded"
+                  onChange={handleChangeDepth}
+                />
+              ) : (
+                <input
+                  type="text"
+                  name="limitDepth"
+                  value={depth.limitDepth}
+                  placeholder="Limit price for the execution"
+                  onChange={handleChangeDepth}
+                />
+              )}
 
               <select
                 name="typeDepth"
@@ -178,7 +209,9 @@ const App = () => {
                 placeholder="Operation type"
                 onChange={handleChangeDepth}
               >
-                <option value="0">Select operation type</option>
+                <option value="" disabled selected>
+                  Select operation type
+                </option>
                 <option value="Buy">Buy</option>
                 <option value="Sell">Sell</option>
               </select>
@@ -188,7 +221,9 @@ const App = () => {
                 value={pair.realDepth}
                 onChange={handleChangeDepth}
               >
-                <option value="0">Real vs one time request</option>
+                <option value="" disabled selected>
+                  Real vs one time request
+                </option>
                 <option value="Real">Real</option>
                 <option value="One">One time request</option>
               </select>
@@ -196,7 +231,14 @@ const App = () => {
               <button type="submit">Get effective price</button>
             </form>
 
-            <p>Average Execution price: {avg}</p>
+            <p>
+              {depth.amountDepth
+                ? depth.realDepth === "Real"
+                  ? "Average price of execution"
+                  : "Simple avg price:"
+                : "Maximum order size"}
+              : {avg}
+            </p>
           </div>
         </div>
       </div>

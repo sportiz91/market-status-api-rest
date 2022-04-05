@@ -22,32 +22,27 @@ router.post("/", async (req, res) => {
   const operationType = req.body.typeDepth;
   const flag = req.body.realDepth;
 
+  if (flag === "One" && limit) return;
+
   if (flag === "One") {
-    let baseUrl;
-    let pathParams;
-    let queryParams;
+    const baseUrl = "https://api-pub.bitfinex.com/v2";
+    const pathParams = "calc/trade/avg";
+    const queryParams = `symbol=${pair}&amount=${
+      operationType === "Buy" ? amountToBeTraded : -1 * amountToBeTraded
+    }`;
 
-    if (!limit) {
-      console.log("noLimit!!!!");
+    // if (limit) {
+    //   console.log("LIMITE PADRE");
 
-      baseUrl = "https://api-pub.bitfinex.com/v2";
-      pathParams = "calc/trade/avg";
-      queryParams = `symbol=${pair}&amount=${
-        operationType === "Buy" ? amountToBeTraded : -1 * amountToBeTraded
-      }`;
-    }
-
-    if (limit) {
-      console.log("LIMITE PADRE");
-
-      baseUrl = "https://api-pub.bitfinex.com/v2";
-      pathParams = "calc/trade/avg";
-      queryParams = `symbol=${pair}&amount=${
-        operationType === "Buy" ? amountToBeTraded : -1 * amountToBeTraded
-      }&rate_limit=${limit}`;
-    }
+    //   baseUrl = "https://api-pub.bitfinex.com/v2";
+    //   pathParams = "calc/trade/avg";
+    //   queryParams = `symbol=${pair}&rate_limit=${limit}`;
+    // }
 
     const aggUrl = `${baseUrl}/${pathParams}?${queryParams}`;
+
+    console.log("aggUrl:");
+    console.log(aggUrl);
 
     const options = {
       url: aggUrl,
@@ -104,14 +99,27 @@ router.post("/", async (req, res) => {
         console.log("sanatizedBook:");
         console.log(sanatizedBook);
 
-        const averagePrice = averager(
-          sanatizedBook,
-          operationType,
-          amountToBeTraded
-        );
+        console.log("amountToBeTraded:");
+        console.log(amountToBeTraded);
 
-        console.log("averagePrice:");
-        console.log(averagePrice);
+        let averagePrice;
+
+        console.log("limit:");
+        console.log(limit);
+
+        if (!amountToBeTraded) {
+          averagePrice = averager(sanatizedBook, "limit", operationType, limit);
+        } else {
+          averagePrice = averager(
+            sanatizedBook,
+            "avg",
+            operationType,
+            amountToBeTraded
+          );
+        }
+
+        // console.log("averagePrice:");
+        // console.log(averagePrice);
 
         // Building response object:
 
