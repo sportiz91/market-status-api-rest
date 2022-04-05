@@ -1,63 +1,32 @@
-const depthWsClientLogic = () => {
-  const webSocket = new WebSocket("ws://localhost:5000");
+// Requiring helpers:
+const categorizer = require("../helpers/categorizer");
+const averager = require("../helpers/averager");
 
-  webSocket.onopen = () => {
-    console.log("Web Socket Code on tip.js");
+const depthWsClientLogic = (
+  decoMsg,
+  operationType,
+  amountToBeTraded,
+  limit
+) => {
+  const book = decoMsg.snapshot;
+  const sanatizedBook = categorizer(book, operationType);
 
-    webSocket.on("message", (msg) => {
-      console.log(`Server says: ${msg}`);
+  let averagePrice;
 
-      const decoMsg = JSON.parse(msg);
-      const book = decoMsg.snapshot;
+  // No amount to be traded means we want to query for the max book size
+  // (Limit):
+  if (!amountToBeTraded) {
+    averagePrice = averager(sanatizedBook, "limit", operationType, limit);
+  } else {
+    averagePrice = averager(
+      sanatizedBook,
+      "avg",
+      operationType,
+      amountToBeTraded
+    );
+  }
 
-      console.log("book:");
-      console.log(book);
-
-      const sanatizedBook = categorizer(book, operationType);
-
-      console.log("sanatizedBook:");
-      console.log(sanatizedBook);
-
-      console.log("amountToBeTraded:");
-      console.log(amountToBeTraded);
-
-      let averagePrice;
-
-      console.log("limit:");
-      console.log(limit);
-
-      if (!amountToBeTraded) {
-        averagePrice = averager(sanatizedBook, "limit", operationType, limit);
-      } else {
-        averagePrice = averager(
-          sanatizedBook,
-          "avg",
-          operationType,
-          amountToBeTraded
-        );
-      }
-
-      // console.log("averagePrice:");
-      // console.log(averagePrice);
-
-      // Answering frontend:
-      res.json(averagePrice);
-
-      webSocket.close();
-    });
-
-    const data = {
-      crypto: pair,
-      api: "depth",
-    };
-
-    // webSocket.send("Hello from Client!");
-    webSocket.send(JSON.stringify(data));
-  };
-
-  webSocket.onclose = () => {
-    console.log("Web Socket Client Closing!");
-  };
+  return averagePrice;
 };
 
 module.exports = depthWsClientLogic;

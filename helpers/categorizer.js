@@ -1,8 +1,9 @@
 const categorizer = (book, opType) => {
   let sanatizedBook;
 
-  // [0 - 249] range bids, [250 - 499] range asks:
+  // [0 - 249] binds range, [250 - 499] asks range:
   if (opType === "Buy") {
+    // Only care about < 250 indexes.
     sanatizedBook = book.reduce(
       (acc, item, index) => {
         if (index < 250) return acc;
@@ -14,12 +15,10 @@ const categorizer = (book, opType) => {
         asks: [],
       }
     );
-
-    // console.log("sanatizedBook Length:");
-    // console.log(sanatizedBook.asks.length);
   }
 
   if (opType === "Sell") {
+    // Only care about > 249 indexes.
     sanatizedBook = book.reduce(
       (acc, item, index) => {
         if (index > 249) return acc;
@@ -31,8 +30,6 @@ const categorizer = (book, opType) => {
         bids: [],
       }
     );
-    // console.log("sanatizedBook Length:");
-    // console.log(sanatizedBook.bids.length);
   }
 
   return sanatizedBook;

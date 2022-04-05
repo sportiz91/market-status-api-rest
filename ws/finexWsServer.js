@@ -11,8 +11,6 @@ const finexWsServer = (crypto, client, leng) => {
 
   // On open ws connection:
   wsFinex.on("open", () => {
-    console.log("ws open");
-
     // Generating initial values for the book:
     book.messageCount = 0;
 
@@ -28,11 +26,6 @@ const finexWsServer = (crypto, client, leng) => {
     );
   });
 
-  // On close ws connection:
-  wsFinex.on("close", () => {
-    console.log("ws close!");
-  });
-
   // On message received by the ws server:
   wsFinex.on("message", (msgg) => {
     // Parse the data into readable js object:
@@ -41,7 +34,7 @@ const finexWsServer = (crypto, client, leng) => {
     // event or hb needs to be ruled out from the book construction:
     if (data.event || data[1] === "hb") return;
 
-    // When book is empty:
+    // Generating snapshot and sending it back to the ws client:
     if (book.messageCount === 0) {
       const snapshot = data[1];
       book.snapshot = snapshot;
@@ -50,6 +43,7 @@ const finexWsServer = (crypto, client, leng) => {
 
       client.send(JSON.stringify(book));
 
+      // Close connection after sending the snapshot book the the ws client:
       wsFinex.close();
     }
   });

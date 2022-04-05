@@ -2,8 +2,8 @@
 const express = require("express");
 const WebSocket = require("ws");
 
-// Requiring external packages:
-const axios = require("axios");
+// Requiring helpers:
+const fetchData = require("../helpers/fetchData");
 
 // Instantiating server router:
 const router = express.Router();
@@ -12,52 +12,48 @@ const router = express.Router();
 // @desc     Fetch tip data (price & quantity) from Bitfinex API for the selected tPAIR.
 // @access   Public
 router.post("/", async (req, res) => {
+  // Initial variables:
   const pair = req.body.pairTip;
   const flag = req.body.realTip;
 
+  // flag === "One" means http connection:
   if (flag === "One") {
-    const baseUrl = "https://api-pub.bitfinex.com/v2";
-    const pathParams = `book/${pair}/P0`;
-    const queryParams = "len=1";
+    try {
+      const arrayResult = await fetchData(pair, "Tip");
 
-    const aggUrl = `${baseUrl}/${pathParams}?${queryParams}`;
+      const responseBid = {
+        price: arrayResult[0][0],
+        amount: arrayResult[0][2],
+      };
 
-    const queryResult = await axios.get(aggUrl);
-    const arrayResult = queryResult.data;
+      const responseAsk = {
+        price: arrayResult[1][0],
+        amount: Math.abs(arrayResult[1][2]),
+      };
 
-    console.log("arrayResult:");
-    console.log(arrayResult);
+      const responseAgg = {
+        bestBid: responseBid,
+        bestAsk: responseAsk,
+      };
 
-    const responseBid = {
-      price: arrayResult[0][0],
-      amount: arrayResult[0][2],
-    };
-
-    const responseAsk = {
-      price: arrayResult[1][0],
-      amount: Math.abs(arrayResult[1][2]),
-    };
-
-    const responseAgg = {
-      bestBid: responseBid,
-      bestAsk: responseAsk,
-    };
-
-    res.json(responseAgg);
+      res.json(responseAgg);
+    } catch (err) {
+      console.error(err.message);
+    }
   }
 
+  // flag === "Real" means ws connection
   if (flag === "Real") {
     const webSocket = new WebSocket("ws://localhost:5000");
 
+    const data = {
+      crypto: pair,
+      api: "tip",
+    };
+
     webSocket.onopen = () => {
-      console.log("Web Socket Code on tip.js");
-
       webSocket.on("message", (msg) => {
-        console.log(`Server says: ${msg}`);
         const decoMsg = JSON.parse(msg);
-
-        console.log("decoMsg:");
-        console.log(decoMsg);
 
         // Building response object:
         const responseBid = {
@@ -78,20 +74,12 @@ router.post("/", async (req, res) => {
         // Answering frontend:
         res.json(responseAgg);
 
+        // Closing connection after receiving first message:
         webSocket.close();
       });
 
-      const data = {
-        crypto: pair,
-        api: "tip",
-      };
-
-      // webSocket.send("Hello from Client!");
+      // Sending data on open connection:
       webSocket.send(JSON.stringify(data));
-    };
-
-    webSocket.onclose = () => {
-      console.log("Web Socket Client Closing!");
     };
   }
 });

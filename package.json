@@ -13,7 +13,6 @@
   "author": "Santiago Pablo Ortiz",
   "license": "ISC",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.17.0",
     "concurrently": "^7.1.0",
     "eslint": "^8.2.0",
     "eslint-config-airbnb": "^19.0.4",

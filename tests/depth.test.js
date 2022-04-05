@@ -15,10 +15,10 @@ mockedFinex.mockImplementation(() =>
   })
 );
 
-const sendingData = {
-  crypto: "tETHUSD",
-  api: "depth",
-};
+// const sendingData = {
+//   crypto: "tETHUSD",
+//   api: "depth",
+// };
 
 // console.log(mockedFinex());
 
@@ -48,7 +48,6 @@ describe("Interaction between ws server and ws client", () => {
     client.onopen = () => {
       client.on("message", (data) => {
         responseMessage = data;
-        console.log(responseMessage);
         client.close();
       });
 

@@ -21,6 +21,6 @@ app.use(express.json({ extended: false }));
 app.use("/api/tip", tipRouter);
 app.use("/api/depth", depthRouter);
 
-// Starting web server with express app and defined port above:
-// Separating the start server logic to facilitate tests.
+// Starting web server with express app and defined port:
+// This is donde by a helper to facilitate testing.
 startWsServer(app, port);

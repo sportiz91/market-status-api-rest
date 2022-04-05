@@ -3,9 +3,7 @@ const express = require("express");
 const WebSocket = require("ws");
 
 // Requiring helpers:
-const categorizer = require("../helpers/categorizer");
-const averager = require("../helpers/averager");
-const fetchPriceDepth = require("../helpers/fetchPriceDepth");
+const fetchData = require("../helpers/fetchData");
 
 // Requiring client ws logic:
 const depthWsClientLogic = require("../ws/depthWsClientLogic");
@@ -17,6 +15,7 @@ const router = express.Router();
 // @desc     Fetch real price of execution from Bitfinex API for the selected tPAIR.
 // @access   Public
 router.post("/", async (req, res) => {
+  // Initial variables:
   const pair = req.body.pairDepth;
   const amountToBeTraded = req.body.amountDepth;
   const limit = req.body.limitDepth;
@@ -25,70 +24,51 @@ router.post("/", async (req, res) => {
 
   if (flag === "One" && limit) return;
 
+  // flag === "One" means http connection:
   if (flag === "One") {
-    const price = await fetchPriceDepth(pair, amountToBeTraded, operationType);
-    res.json(price[0]);
+    try {
+      const price = await fetchData(
+        pair,
+        "Depth",
+        amountToBeTraded,
+        operationType
+      );
+      res.json(price[0]);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
+  // flag === "Real" means ws connection
   if (flag === "Real") {
     const webSocket = new WebSocket("ws://localhost:5000");
 
+    const data = {
+      crypto: pair,
+      api: "depth",
+    };
+
     webSocket.onopen = () => {
-      console.log("Web Socket Code on tip.js");
-
       webSocket.on("message", (msg) => {
-        console.log(`Server says: ${msg}`);
-
         const decoMsg = JSON.parse(msg);
-        const book = decoMsg.snapshot;
 
-        console.log("book:");
-        console.log(book);
-
-        const sanatizedBook = categorizer(book, operationType);
-
-        console.log("sanatizedBook:");
-        console.log(sanatizedBook);
-
-        console.log("amountToBeTraded:");
-        console.log(amountToBeTraded);
-
-        let averagePrice;
-
-        console.log("limit:");
-        console.log(limit);
-
-        if (!amountToBeTraded) {
-          averagePrice = averager(sanatizedBook, "limit", operationType, limit);
-        } else {
-          averagePrice = averager(
-            sanatizedBook,
-            "avg",
-            operationType,
-            amountToBeTraded
-          );
-        }
-
-        // console.log("averagePrice:");
-        // console.log(averagePrice);
+        // Applying ws logic for depth api:
+        const averagePrice = depthWsClientLogic(
+          decoMsg,
+          operationType,
+          amountToBeTraded,
+          limit
+        );
 
         // Answering frontend:
         res.json(averagePrice);
 
+        // Closing connection after receiving first message:
         webSocket.close();
       });
 
-      const data = {
-        crypto: pair,
-        api: "depth",
-      };
-
-      // webSocket.send("Hello from Client!");
+      // Sending data on open connection:
       webSocket.send(JSON.stringify(data));
-    };
-
-    webSocket.onclose = () => {
-      console.log("Web Socket Client Closing!");
     };
   }
 });

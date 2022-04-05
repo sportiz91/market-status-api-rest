@@ -147,10 +147,10 @@ const App = () => {
                 onChange={handleChangeTip}
               >
                 <option value="" disabled selected>
-                  Real vs one time request
+                  Real vs One Time Request
                 </option>
                 <option value="Real">Real</option>
-                <option value="One">One time request</option>
+                <option value="One">One Time Request</option>
               </select>
               <button type="submit">Get price & amount</button>
             </form>
@@ -169,12 +169,14 @@ const App = () => {
                 value={depth.pairDepth}
                 placeholder="Insert trading pair"
                 onChange={handleChangeDepth}
+                required
               />
 
               <select
                 name="amountLimitSelectDepth"
                 value={depth.amountLimitSelectDepth}
                 onChange={handleChangeDepth}
+                required
               >
                 <option value="" disabled selected>
                   Amount traded vs Effective price
@@ -222,10 +224,10 @@ const App = () => {
                 onChange={handleChangeDepth}
               >
                 <option value="" disabled selected>
-                  Real vs one time request
+                  Real vs One Time Request
                 </option>
                 <option value="Real">Real</option>
-                <option value="One">One time request</option>
+                <option value="One">One Time Request</option>
               </select>
 
               <button type="submit">Get effective price</button>
@@ -235,7 +237,7 @@ const App = () => {
               {depth.amountDepth
                 ? depth.realDepth === "Real"
                   ? "Average price of execution"
-                  : "Simple avg price:"
+                  : "Simple avg price"
                 : "Maximum order size"}
               : {avg}
             </p>
