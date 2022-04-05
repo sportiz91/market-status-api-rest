@@ -18,15 +18,34 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const pair = req.body.pairDepth;
   const amountToBeTraded = req.body.amountDepth;
+  const limit = req.body.limitDepth;
   const operationType = req.body.typeDepth;
   const flag = req.body.realDepth;
 
   if (flag === "One") {
-    const baseUrl = "https://api-pub.bitfinex.com/v2";
-    const pathParams = "calc/trade/avg";
-    const queryParams = `symbol=${pair}&amount=${
-      operationType === "Buy" ? amountToBeTraded : -1 * amountToBeTraded
-    }`;
+    let baseUrl;
+    let pathParams;
+    let queryParams;
+
+    if (!limit) {
+      console.log("noLimit!!!!");
+
+      baseUrl = "https://api-pub.bitfinex.com/v2";
+      pathParams = "calc/trade/avg";
+      queryParams = `symbol=${pair}&amount=${
+        operationType === "Buy" ? amountToBeTraded : -1 * amountToBeTraded
+      }`;
+    }
+
+    if (limit) {
+      console.log("LIMITE PADRE");
+
+      baseUrl = "https://api-pub.bitfinex.com/v2";
+      pathParams = "calc/trade/avg";
+      queryParams = `symbol=${pair}&amount=${
+        operationType === "Buy" ? amountToBeTraded : -1 * amountToBeTraded
+      }&rate_limit=${limit}`;
+    }
 
     const aggUrl = `${baseUrl}/${pathParams}?${queryParams}`;
 

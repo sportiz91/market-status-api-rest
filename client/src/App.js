@@ -17,6 +17,7 @@ const App = () => {
     realDepth: "",
     typeDepth: "",
     amountDepth: "",
+    limitDepth: "",
   });
   const [best, setBest] = useState({
     bidPrice: "",
@@ -160,6 +161,14 @@ const App = () => {
                 name="amountDepth"
                 value={depth.amountDepth}
                 placeholder="Amount to be traded"
+                onChange={handleChangeDepth}
+              />
+
+              <input
+                type="text"
+                name="limitDepth"
+                value={depth.limitDepth}
+                placeholder="Limit price for the execution"
                 onChange={handleChangeDepth}
               />
 
