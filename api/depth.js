@@ -41,7 +41,8 @@ router.post("/", async (req, res) => {
 
   // flag === "Real" means ws connection
   if (flag === "Real") {
-    const webSocket = new WebSocket("ws://localhost:5000");
+    const port = process.env.PORT || 5000;
+    const webSocket = new WebSocket(`ws://localhost:${port}`);
 
     const data = {
       crypto: pair,
