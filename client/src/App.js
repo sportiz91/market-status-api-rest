@@ -140,7 +140,7 @@ const App = () => {
                   type="text"
                   name="pairTip"
                   value={pair.pairTip}
-                  placeholder="Insert trading pair"
+                  placeholder="Trading pair (tBTCUSD, tETHUSD, tYYYZZZ)"
                   onChange={handleChangeTip}
                 />
                 <select
@@ -171,7 +171,7 @@ const App = () => {
                   type="text"
                   name="pairDepth"
                   value={depth.pairDepth}
-                  placeholder="Insert trading pair"
+                  placeholder="Trading pair (tBTCUSD, tETHUSD, tYYYZZZ)"
                   onChange={handleChangeDepth}
                   required
                 />
