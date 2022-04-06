@@ -133,114 +133,119 @@ const App = () => {
           </div>
 
           <div className="endPointWrapper">
-            <form className="formWrapper" onSubmit={handleSubmitTip}>
-              <input
-                type="text"
-                name="pairTip"
-                value={pair.pairTip}
-                placeholder="Insert trading pair"
-                onChange={handleChangeTip}
-              />
-              <select
-                name="realTip"
-                value={pair.realTip}
-                onChange={handleChangeTip}
-              >
-                <option value="" disabled selected>
-                  Real vs One Time Request
-                </option>
-                <option value="Real">Real</option>
-                <option value="One">One Time Request</option>
-              </select>
-              <button type="submit">Get price & amount</button>
-            </form>
-
-            <p>
-              Best bid: price {best.bidPrice} & amount: {best.bidAmount}
-            </p>
-            <p>
-              Best ask: price {best.askPrice} & amount: {best.askAmount}
-            </p>
-
-            <form className="formWrapper" onSubmit={handleSubmitDepth}>
-              <input
-                type="text"
-                name="pairDepth"
-                value={depth.pairDepth}
-                placeholder="Insert trading pair"
-                onChange={handleChangeDepth}
-                required
-              />
-
-              <select
-                name="amountLimitSelectDepth"
-                value={depth.amountLimitSelectDepth}
-                onChange={handleChangeDepth}
-                required
-              >
-                <option value="" disabled selected>
-                  Amount traded vs Effective price
-                </option>
-                <option value="Amount">Amount Traded</option>
-                <option value="Effective">Effective price</option>
-              </select>
-
-              {depth.amountLimitSelectDepth === "" ? (
-                ""
-              ) : depth.amountLimitSelectDepth === "Amount" ? (
+            <div className="leftEnd">
+              <h1>Tip Endpoint</h1>
+              <form className="formWrapper" onSubmit={handleSubmitTip}>
                 <input
                   type="text"
-                  name="amountDepth"
-                  value={depth.amountDepth}
-                  placeholder="Amount to be traded"
-                  onChange={handleChangeDepth}
+                  name="pairTip"
+                  value={pair.pairTip}
+                  placeholder="Insert trading pair"
+                  onChange={handleChangeTip}
                 />
-              ) : (
+                <select
+                  name="realTip"
+                  value={pair.realTip}
+                  onChange={handleChangeTip}
+                >
+                  <option value="" disabled selected>
+                    Real vs One Time Request
+                  </option>
+                  <option value="Real">Real</option>
+                  <option value="One">One Time Request</option>
+                </select>
+                <button type="submit">Get price & amount</button>
+              </form>
+              <p>
+                Best bid price: {best.bidPrice} & amount: {best.bidAmount}
+              </p>
+              <p>
+                Best ask price: {best.askPrice} & amount: {best.askAmount}
+              </p>
+            </div>
+
+            <div className="leftEnd">
+              <h1>Depth Endpoint</h1>
+              <form className="formWrapper" onSubmit={handleSubmitDepth}>
                 <input
                   type="text"
-                  name="limitDepth"
-                  value={depth.limitDepth}
-                  placeholder="Limit price for the execution"
+                  name="pairDepth"
+                  value={depth.pairDepth}
+                  placeholder="Insert trading pair"
                   onChange={handleChangeDepth}
+                  required
                 />
-              )}
 
-              <select
-                name="typeDepth"
-                value={depth.typeDepth}
-                placeholder="Operation type"
-                onChange={handleChangeDepth}
-              >
-                <option value="" disabled selected>
-                  Select operation type
-                </option>
-                <option value="Buy">Buy</option>
-                <option value="Sell">Sell</option>
-              </select>
+                <select
+                  name="amountLimitSelectDepth"
+                  value={depth.amountLimitSelectDepth}
+                  onChange={handleChangeDepth}
+                  required
+                >
+                  <option value="" disabled selected>
+                    Amount traded vs Effective price
+                  </option>
+                  <option value="Amount">Amount Traded</option>
+                  <option value="Effective">Effective price</option>
+                </select>
 
-              <select
-                name="realDepth"
-                value={pair.realDepth}
-                onChange={handleChangeDepth}
-              >
-                <option value="" disabled selected>
-                  Real vs One Time Request
-                </option>
-                <option value="Real">Real</option>
-                <option value="One">One Time Request</option>
-              </select>
+                {depth.amountLimitSelectDepth === "" ? (
+                  ""
+                ) : depth.amountLimitSelectDepth === "Amount" ? (
+                  <input
+                    type="text"
+                    name="amountDepth"
+                    value={depth.amountDepth}
+                    placeholder="Amount to be traded"
+                    onChange={handleChangeDepth}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    name="limitDepth"
+                    value={depth.limitDepth}
+                    placeholder="Limit price for the execution"
+                    onChange={handleChangeDepth}
+                  />
+                )}
 
-              <button type="submit">Get effective price</button>
-            </form>
+                <select
+                  name="typeDepth"
+                  value={depth.typeDepth}
+                  placeholder="Operation type"
+                  onChange={handleChangeDepth}
+                >
+                  <option value="" disabled selected>
+                    Select operation type
+                  </option>
+                  <option value="Buy">Buy</option>
+                  <option value="Sell">Sell</option>
+                </select>
 
-            <p>
-              {depth.amountDepth
-                ? depth.realDepth === "Real"
-                  ? "Average price of execution"
-                  : "Simple avg price"
-                : "Maximum order size"}
-              : {avg}
-            </p>
+                <select
+                  name="realDepth"
+                  value={pair.realDepth}
+                  onChange={handleChangeDepth}
+                >
+                  <option value="" disabled selected>
+                    Real vs One Time Request
+                  </option>
+                  <option value="Real">Real</option>
+                  <option value="One">One Time Request</option>
+                </select>
+
+                <button type="submit">Get effective price</button>
+              </form>
+
+              <p>
+                {depth.amountDepth
+                  ? depth.realDepth === "Real"
+                    ? "Average price of execution"
+                    : "Simple avg price"
+                  : "Maximum order size"}
+                : {avg}
+              </p>
+            </div>
           </div>
         </div>
       </div>
